@@ -404,14 +404,14 @@ fn walk_attrs(rec: &[u8], target: u32, acc: &mut Acc, sink: &mut Sink) -> std::r
 /// become U+FFFD.
 #[inline]
 pub fn push_utf16_as_utf8(out: &mut Vec<u8>, raw: &[u8]) {
-    let n = raw.len() / 2;
-    let ascii = raw.chunks_exact(2).all(|c| c[1] == 0 && c[0] < 0x80);
+    let (pairs, _) = raw.as_chunks::<2>();
+    let ascii = pairs.iter().all(|c| c[1] == 0 && c[0] < 0x80);
     if ascii {
-        out.reserve(n);
-        out.extend(raw.chunks_exact(2).map(|c| c[0]));
+        out.reserve(pairs.len());
+        out.extend(pairs.iter().map(|c| c[0]));
         return;
     }
-    let units = raw.chunks_exact(2).map(|c| u16::from_le_bytes([c[0], c[1]]));
+    let units = pairs.iter().map(|&c| u16::from_le_bytes(c));
     let mut buf = [0u8; 4];
     for ch in char::decode_utf16(units) {
         let ch = ch.unwrap_or(char::REPLACEMENT_CHARACTER);

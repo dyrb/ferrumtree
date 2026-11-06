@@ -97,9 +97,8 @@ fn mix(mut h: u64) -> u64 {
 impl Hasher128 {
     /// Feed bytes. All calls but the last must pass a multiple of 32 bytes.
     pub fn update(&mut self, b: &[u8]) {
-        let chunks = b.chunks_exact(32);
-        let rem = chunks.remainder();
-        for c in chunks {
+        let (blocks, rem) = b.as_chunks::<32>();
+        for c in blocks {
             for (i, lane) in self.l.iter_mut().enumerate() {
                 let w = u64::from_le_bytes(c[i * 8..i * 8 + 8].try_into().unwrap());
                 *lane = (*lane ^ w).wrapping_mul(K).rotate_left(31);

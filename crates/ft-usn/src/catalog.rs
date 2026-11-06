@@ -113,9 +113,8 @@ fn hash(b: &[u8], seed: u64) -> u64 {
         seed.rotate_left(31) ^ 0x1656_67B1_9E37_79F9,
         seed.rotate_left(47) ^ 0x27D4_EB2F_1656_67C5,
     ];
-    let chunks = b.chunks_exact(32);
-    let rem = chunks.remainder();
-    for c in chunks {
+    let (blocks, rem) = b.as_chunks::<32>();
+    for c in blocks {
         for (i, lane) in l.iter_mut().enumerate() {
             let w = u64::from_le_bytes(c[i * 8..i * 8 + 8].try_into().unwrap());
             *lane = (*lane ^ w).wrapping_mul(K).rotate_left(31);

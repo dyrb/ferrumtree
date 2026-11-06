@@ -1,5 +1,11 @@
 # FerrumTree
 
+[![Build](https://github.com/dyrb/ferrumtree/actions/workflows/ci.yml/badge.svg)](https://github.com/dyrb/ferrumtree/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dyrb/ferrumtree)](https://github.com/dyrb/ferrumtree/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#лицензия)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6)
+![Rust](https://img.shields.io/badge/made%20with-Rust-B7410E)
+
 Анализатор занятого места на дисках для Windows. Читает главную файловую таблицу NTFS
 (MFT) напрямую, показывает папки и файлы по размеру в виде дерева, список типов файлов и
 графическую карту и поддерживает всё это в актуальном состоянии по журналу изменений NTFS.

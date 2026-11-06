@@ -1,5 +1,11 @@
 # FerrumTree
 
+[![Build](https://github.com/dyrb/ferrumtree/actions/workflows/ci.yml/badge.svg)](https://github.com/dyrb/ferrumtree/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/dyrb/ferrumtree)](https://github.com/dyrb/ferrumtree/releases/latest)
+[![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](#license)
+![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6)
+![Rust](https://img.shields.io/badge/made%20with-Rust-B7410E)
+
 Disk space analyzer for Windows. It reads the NTFS Master File Table directly, shows
 folders and files by size in a tree, a list of file types and a treemap, and keeps all
 of it current from the NTFS change journal.

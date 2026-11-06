@@ -80,8 +80,12 @@ System volume C:, full scan without cache (Shift+F5), FerrumTree 0.1.0.
 | Files and folders | 1,073,082 + 221,662 | 651,909 + 103,670 |
 | **Full scan** | **9.4 s** | **0.36 s** |
 
-On a SATA SSD the full scan is limited by the disk (the MFT is read at about 200 MB/s);
-on a fast NVMe drive it takes a fraction of a second.
+A full scan reads the whole MFT, so its time depends on the disk, not on the processor.
+On PC 1 the MFT is 1.9 GB (1.6 GB of it in use); parsing its 1.3 million records takes
+about 0.2 s of processor time, the remaining 9 seconds are reading. This budget SATA SSD
+delivers about 200 MB/s for these reads (the SATA interface itself allows up to 550 MB/s),
+while the NVMe drive of PC 2 is rated at up to 7,000 MB/s. Task Manager averages disk
+speed over a second and does not show such short bursts accurately.
 
 Other figures (PC 1):
 

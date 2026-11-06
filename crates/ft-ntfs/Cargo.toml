@@ -1,0 +1,11 @@
+[package]
+name = "ft-ntfs"
+description = "Read-only raw NTFS volume reader and parallel MFT parser"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+windows-sys.workspace = true

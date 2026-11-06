@@ -1,0 +1,17 @@
+[package]
+name = "ferrumtree"
+description = "FerrumTree command line"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-ntfs.workspace = true
+ft-index.workspace = true
+ft-search.workspace = true
+ft-usn.workspace = true
+ft-fallback.workspace = true
+ft-dupes.workspace = true
+windows-sys.workspace = true

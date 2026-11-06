@@ -1,0 +1,15 @@
+[package]
+name = "ft-search"
+description = "Substring and wildcard search over the compact name index"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-index.workspace = true
+memchr.workspace = true
+
+[dev-dependencies]
+ft-ntfs.workspace = true

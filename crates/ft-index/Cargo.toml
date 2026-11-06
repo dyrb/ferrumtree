@@ -1,0 +1,11 @@
+[package]
+name = "ft-index"
+description = "Compact BFS-ordered file tree index with size aggregation"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-ntfs.workspace = true

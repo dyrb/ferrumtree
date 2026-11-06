@@ -1,0 +1,12 @@
+/target
+/dist
+
+# Files the programs write next to themselves
+*.ftc
+*.tmp
+FerrumTree.ini
+
+# Volume images used for benchmarks
+*.img
+*.vhd
+*.vhdx

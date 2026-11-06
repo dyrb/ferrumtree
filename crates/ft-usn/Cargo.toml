@@ -1,0 +1,13 @@
+[package]
+name = "ft-usn"
+description = "Persistent MFT record catalog kept current through the NTFS USN change journal"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-ntfs.workspace = true
+ft-index.workspace = true
+windows-sys.workspace = true

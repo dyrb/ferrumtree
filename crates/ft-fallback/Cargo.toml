@@ -1,0 +1,15 @@
+[package]
+name = "ft-fallback"
+description = "Parallel directory walker for volumes without an MFT (FAT, exFAT, ReFS, network shares)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-ntfs.workspace = true
+windows-sys.workspace = true
+
+[dev-dependencies]
+ft-index.workspace = true

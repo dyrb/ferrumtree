@@ -1,0 +1,14 @@
+[package]
+name = "ft-dupes"
+description = "Duplicate file finder over the FerrumTree index: size -> head hash -> full hash"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+ft-index.workspace = true
+
+[dev-dependencies]
+ft-ntfs.workspace = true

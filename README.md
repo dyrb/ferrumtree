@@ -69,32 +69,17 @@ View, Track changes on disk:
 
 ## Performance
 
-System volume C:, full scan without cache (Shift+F5), FerrumTree 0.1.0.
+Full scan of the system volume without cache:
 
 | | PC 1 | PC 2 |
 | --- | --- | --- |
-| Processor | Intel Core i5-10400F | AMD Ryzen 7 5700X |
-| Memory | 16 GB DDR4-2667 | 16 GB DDR4-3600 |
-| Disk | DEXP C100 512 GB, SATA SSD | Kingston KC3000 1 TB, NVMe PCIe 4.0 |
-| Used space | 322.6 GB | 425.3 GB |
-| Files and folders | 1,073,082 + 221,662 | 651,909 + 103,670 |
-| **Full scan** | **9.4 s** | **0.36 s** |
+| Processor | AMD Ryzen 7 5700X | Intel Core i5-10400F |
+| Disk | Kingston KC3000 1 TB, NVMe | DEXP C100 512 GB, SATA |
+| Files and folders | 755,579 | 1,294,744 |
+| **Full scan** | **0.36 s** | **9.4 s** |
 
-A full scan reads the whole MFT, so its time depends on the disk, not on the processor.
-On PC 1 the MFT is 1.9 GB (1.6 GB of it in use); parsing its 1.3 million records takes
-about 0.2 s of processor time, the remaining 9 seconds are reading. This budget SATA SSD
-delivers about 200 MB/s for these reads (the SATA interface itself allows up to 550 MB/s),
-while the NVMe drive of PC 2 is rated at up to 7,000 MB/s. Task Manager averages disk
-speed over a second and does not show such short bursts accurately.
-
-Other figures (PC 1):
-
-| | |
-| --- | --- |
-| Repeat scan with cache | about 0.2 s |
-| Memory after a scan | about 110 MB |
-| Search over 1.3 million names | under 10 ms |
-| Applying a change on disk to the tree | under 0.1 ms |
+The full scan time is set by the disk speed. A repeat scan with the cache takes about
+0.2 s, memory use after a scan is about 110 MB.
 
 ## Building from source
 

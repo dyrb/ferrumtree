@@ -69,12 +69,24 @@ View, Track changes on disk:
 
 ## Performance
 
-Measured on the author's machine: system volume with 1.3 million files and folders, MFT
-of 1.9 GB on a SATA SSD reading about 200 MB/s.
+System volume C:, full scan without cache (Shift+F5), FerrumTree 0.1.0.
+
+| | PC 1 | PC 2 |
+| --- | --- | --- |
+| Processor | Intel Core i5-10400F | AMD Ryzen 7 5700X |
+| Memory | 16 GB DDR4-2667 | 16 GB DDR4-3600 |
+| Disk | DEXP C100 512 GB, SATA SSD | Kingston KC3000 1 TB, NVMe PCIe 4.0 |
+| Used space | 322.6 GB | 425.3 GB |
+| Files and folders | 1,073,082 + 221,662 | 651,909 + 103,670 |
+| **Full scan** | **9.4 s** | **0.36 s** |
+
+On a SATA SSD the full scan is limited by the disk (the MFT is read at about 200 MB/s);
+on a fast NVMe drive it takes a fraction of a second.
+
+Other figures (PC 1):
 
 | | |
 | --- | --- |
-| Full scan | about 9.4 s, limited by the disk |
 | Repeat scan with cache | about 0.2 s |
 | Memory after a scan | about 110 MB |
 | Search over 1.3 million names | under 10 ms |

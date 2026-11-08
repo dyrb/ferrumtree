@@ -12,14 +12,9 @@ use std::time::Instant;
 use ft_index::nflags;
 use windows_sys::Win32::Foundation::{HWND, POINT};
 use windows_sys::Win32::Graphics::Gdi::{ClientToScreen, InvalidateRect};
-use windows_sys::Win32::System::Com::CoTaskMemFree;
 use windows_sys::Win32::System::DataExchange::{CloseClipboard, EmptyClipboard, OpenClipboard, RegisterClipboardFormatW, SetClipboardData};
 use windows_sys::Win32::System::Memory::{GMEM_MOVEABLE, GMEM_ZEROINIT, GlobalAlloc, GlobalLock, GlobalUnlock};
-use windows_sys::Win32::UI::Controls::Dialogs::{GetSaveFileNameW, OFN_NOCHANGEDIR, OFN_OVERWRITEPROMPT, OFN_PATHMUSTEXIST, OPENFILENAMEW};
-use windows_sys::Win32::UI::Shell::{
-    BIF_NEWDIALOGSTYLE, BIF_RETURNONLYFSDIRS, BROWSEINFOW, FO_DELETE, FOF_ALLOWUNDO, FOF_WANTNUKEWARNING, SHBrowseForFolderW,
-    SHFILEOPSTRUCTW, SHFileOperationW, SHGetPathFromIDListW, ShellExecuteW,
-};
+use windows_sys::Win32::UI::Shell::{FO_DELETE, FOF_ALLOWUNDO, FOF_WANTNUKEWARNING, SHFILEOPSTRUCTW, SHFileOperationW, ShellExecuteW};
 use windows_sys::Win32::UI::WindowsAndMessaging::*;
 
 use crate::app::{self, Mode, with};
@@ -349,26 +344,23 @@ pub fn start_scan(rescan: bool) {
 
 pub fn pick_folder() {
     let Some(w) = main_wnd() else { return };
-    let title = wide(t(S::SelectFolder));
-    let mut name = [0u16; 260];
-    // SAFETY: standard shell folder dialog; the returned PIDL is freed here.
-    let path = unsafe {
-        let mut bi: BROWSEINFOW = std::mem::zeroed();
-        bi.hwndOwner = w.main;
-        bi.pszDisplayName = name.as_mut_ptr();
-        bi.lpszTitle = title.as_ptr();
-        bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-        let pidl = SHBrowseForFolderW(&bi);
-        if pidl.is_null() {
-            None
-        } else {
-            let mut buf = vec![0u16; 32768];
-            let ok = SHGetPathFromIDListW(pidl, buf.as_mut_ptr()) != 0;
-            CoTaskMemFree(pidl as *const _);
-            let n = buf.iter().position(|&c| c == 0).unwrap_or(0);
-            ok.then(|| String::from_utf16_lossy(&buf[..n]))
-        }
-    };
+    let initial = with(|a| {
+        a.snap.as_ref().map(|s| match &s.target {
+            Target::Drive(letter) => format!("{letter}:\\"),
+            Target::Folder(path) => path.clone(),
+        })
+    })
+    .flatten();
+    let path = choose_dialog(
+        w.main,
+        crate::dialog::Options {
+            kind: crate::dialog::Kind::Folder,
+            title: t(S::SelectFolder),
+            initial: initial.as_deref().map(std::path::Path::new),
+            ..Default::default()
+        },
+    )
+    .map(|(path, _)| path.to_string_lossy().into_owned());
     let Some(path) = path else {
         // Cancelled: back to the current target.
         let cur = with(|a| a.snap.as_ref().and_then(|s| a.targets.iter().position(|t| t.0 == s.target))).flatten();
@@ -569,28 +561,31 @@ fn delete(owner: HWND, sel: &Sel, permanent: bool) {
     }
 }
 
-fn save_dialog(default_name: &str, filter: &str, ext: &str) -> Option<String> {
-    let owner = main_wnd()?.main;
-    let mut file: Vec<u16> = default_name.encode_utf16().collect();
-    file.resize(32768, 0);
-    let filter: Vec<u16> = filter.encode_utf16().chain([0, 0]).map(|c| if c == '|' as u16 { 0 } else { c }).collect();
-    let def = wide(ext);
-    // SAFETY: OPENFILENAMEW with buffers that outlive the call.
-    unsafe {
-        let mut o: OPENFILENAMEW = std::mem::zeroed();
-        o.lStructSize = size_of::<OPENFILENAMEW>() as u32;
-        o.hwndOwner = owner;
-        o.lpstrFilter = filter.as_ptr();
-        o.lpstrFile = file.as_mut_ptr();
-        o.nMaxFile = file.len() as u32;
-        o.lpstrDefExt = def.as_ptr();
-        o.Flags = OFN_OVERWRITEPROMPT | OFN_PATHMUSTEXIST | OFN_NOCHANGEDIR;
-        if GetSaveFileNameW(&mut o) == 0 {
-            return None;
+fn choose_dialog(owner: HWND, options: crate::dialog::Options<'_>) -> Option<(std::path::PathBuf, u32)> {
+    match crate::dialog::show(owner, options) {
+        Ok(result) => result,
+        Err(code) => {
+            let text = format!("{} (0x{:08X})", t(S::DialogFailed), code as u32);
+            status(text.clone());
+            unsafe { MessageBoxW(owner, wide(&text).as_ptr(), wide(t(S::Error)).as_ptr(), MB_OK | MB_ICONERROR) };
+            None
         }
     }
-    let n = file.iter().position(|&c| c == 0).unwrap_or(0);
-    Some(String::from_utf16_lossy(&file[..n]))
+}
+
+fn save_dialog(default_name: &str, filters: &[(&str, &str)], ext: &str) -> Option<String> {
+    let owner = main_wnd()?.main;
+    choose_dialog(
+        owner,
+        crate::dialog::Options {
+            kind: crate::dialog::Kind::Save { overwrite: true },
+            file_name: default_name,
+            filters,
+            extension: ext,
+            ..Default::default()
+        },
+    )
+    .map(|(path, _)| path.to_string_lossy().into_owned())
 }
 
 fn post_done_to(hwnd: isize, msg: String) {
@@ -677,7 +672,7 @@ fn after_tree_change(c: app::Changed) {
 /// Every node below the scan root, written on a background thread.
 fn export_csv() {
     let Some((snap, root, hwnd)) = with(|a| a.snap.clone().map(|s| (s, a.view_root, a.w.main as isize))).flatten() else { return };
-    let Some(path) = save_dialog("ferrumtree.csv", "CSV (*.csv)|*.csv|", "csv") else { return };
+    let Some(path) = save_dialog("ferrumtree.csv", &[("CSV (*.csv)", "*.csv")], "csv") else { return };
     status(format!("{} {path}", t(S::Exporting)));
     std::thread::spawn(move || {
         let ix = &snap.ix;
@@ -735,7 +730,7 @@ fn clear_cache() {
 }
 
 fn export_types() {
-    let Some(path) = save_dialog("ferrumtree-types.csv", "CSV (*.csv)|*.csv|", "csv") else { return };
+    let Some(path) = save_dialog("ferrumtree-types.csv", &[("CSV (*.csv)", "*.csv")], "csv") else { return };
     let rows = with(|a| {
         let n = a.type_rows.len();
         (0..n).map(|r| (0..6).map(|c| a.type_cell(r, c)).collect::<Vec<_>>()).collect::<Vec<_>>()
@@ -758,7 +753,7 @@ fn save_png() {
     if w == 0 || h == 0 {
         return;
     }
-    let Some(path) = save_dialog("ferrumtree.png", "PNG (*.png)|*.png|", "png") else { return };
+    let Some(path) = save_dialog("ferrumtree.png", &[("PNG (*.png)", "*.png")], "png") else { return };
     let msg = match std::fs::write(&path, crate::png::encode(w, h, &px)) {
         Ok(()) => format!("{}: {path}", t(S::Saved)),
         Err(e) => format!("{}: {e}", t(S::Error)),

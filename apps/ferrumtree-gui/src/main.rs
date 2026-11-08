@@ -8,6 +8,7 @@
 
 mod app;
 mod cmds;
+mod dialog;
 mod engine;
 mod lang;
 mod list;

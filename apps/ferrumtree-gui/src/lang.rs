@@ -150,6 +150,7 @@ strings! {
     Exporting = "Exporting", "Экспорт";
     Saved = "Saved", "Сохранено";
     Error = "Error", "Ошибка";
+    DialogFailed = "Could not open the file or folder dialog", "Не удалось открыть диалог выбора файла или папки";
     NotAllowed = "This item cannot be deleted from here.", "Этот элемент нельзя удалить отсюда.";
     NeedAdmin = "Access denied. Run FerrumTree as administrator.", "Нет доступа. Запустите FerrumTree от имени администратора.";
 }

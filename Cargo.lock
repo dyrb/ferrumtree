@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "ferrumtree"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-dupes",
  "ft-fallback",
@@ -17,7 +17,7 @@ dependencies = [
 
 [[package]]
 name = "ferrumtree-gui"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-dupes",
  "ft-fallback",
@@ -31,7 +31,7 @@ dependencies = [
 
 [[package]]
 name = "ft-dupes"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-index",
  "ft-ntfs",
@@ -39,7 +39,7 @@ dependencies = [
 
 [[package]]
 name = "ft-fallback"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-index",
  "ft-ntfs",
@@ -48,21 +48,21 @@ dependencies = [
 
 [[package]]
 name = "ft-index"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-ntfs",
 ]
 
 [[package]]
 name = "ft-ntfs"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "windows-sys",
 ]
 
 [[package]]
 name = "ft-search"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-index",
  "ft-ntfs",
@@ -71,7 +71,7 @@ dependencies = [
 
 [[package]]
 name = "ft-treemap"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-index",
  "ft-ntfs",
@@ -79,7 +79,7 @@ dependencies = [
 
 [[package]]
 name = "ft-usn"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "ft-index",
  "ft-ntfs",
